@@ -1,0 +1,41 @@
+version: "3"
+
+volumes:
+  messagebroker:
+
+services:
+
+  rabbitmq:
+    # @todo
+    # Container name should match the name given in the mongo connection string
+    # Refactor into environment variables, then reinclude the container name.
+    # container_name: rabbitmq_concha_twitter
+    image: rabbitmq:3.6.12-alpine
+    ports:
+      - 5672:5672
+    volumes:
+      - messagebroker:/data/messages
+
+  concha_twitter_worker:
+    # @todo
+    # Container name should match the name given in the mongo connection string
+    # Refactor into environment variables, then reinclude the container name.
+    # container_name: concha_twitter
+    environment:
+      - NODE_CONFIG_DIR=/app/src/config
+      - TWITTER_CONSUMER_KEY
+      - TWITTER_CONSUMER_SECRET
+      - TWITTER_ACCESS_TOKEN
+      - TWITTER_ACCESS_TOKEN_SECRET
+    build: .
+    volumes:
+      # Make the following available to docker so that changes made on the host
+      # are immediately available inside the docker container.
+      - ./src:/app/src
+      - ./package.json:/app/package.json
+      - ./npm-shrinkwrap.json:/app/npm-shrinkwrap.json
+    command: npm run debug
+    links:
+      - rabbitmq
+    depends_on:
+      - rabbitmq

@@ -1,0 +1,7 @@
+{
+  "messageBroker": "amqp://rabbitmq",
+  "incomingQueue": "twitter_request",
+  "outgoingQueue": "twitter_receive",
+  "twitterCallbackUrl": "not_yet_used",
+  "maxNoOfTweets": 200
+}

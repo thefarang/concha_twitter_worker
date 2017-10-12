@@ -1,0 +1,37 @@
+{
+  "name": "concha_twitter_worker",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "lint": "./node_modules/.bin/standard --verbose \"src/**/*.js\"",
+    "fix-style": "./node_modules/.bin/standard --fix \"src/**/*.js\"",
+    "debug": "./node_modules/.bin/nodemon ./src/bin/startup.js", 
+    "test": "./node_modules/.bin/mocha --timeout 20000 \"src/test/lib/*.js\"",
+    "cover": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --timeout 20000 \"src/test/lib/*.js\"",
+    "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
+  },
+  "dependencies": {
+    "config": "1.26.2",
+    "amqplib": "0.5.1",
+    "twitter-node-client": "0.0.6"
+  },
+  "devDependencies": {
+    "nodemon": "1.12.1",
+    "standard": "10.0.3",
+    "mocha": "3.5.3",
+    "chai": "4.1.2",
+    "istanbul": "v1.1.0-alpha.1",
+    "coveralls": "3.0.0",
+    "mocha-lcov-reporter": "1.3.0"
+  },
+  "standard": {
+    "globals": [
+      "describe",
+      "before",
+      "beforeEach",
+      "after",
+      "afterEach",
+      "it"
+    ]
+  }
+}
