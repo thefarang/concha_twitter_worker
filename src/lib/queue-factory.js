@@ -1,12 +1,19 @@
 'use strict'
 
+const log = require('./log')
+const config = require('config')
 const amqp = require('amqplib/callback_api')
 const Queue = require('./queue')
 
-const connect = (messagebroker) => {
+const connect = (messageBroker) => {
   return new Promise((resolve, reject) => {
-    amqp.connect(messagebroker, (err, conn) => {
+    log.info({ messageBroker: messageBroker }, 'Connecting to messagebroker')
+    amqp.connect(messageBroker, (err, conn) => {
       if (err) {
+        log.info({
+          err: err,
+          messageBroker: messageBroker
+        }, 'Error occurred whilst connecting to message broker')
         return reject(err)
       }
       return resolve(conn)
@@ -16,8 +23,10 @@ const connect = (messagebroker) => {
 
 const createChannel = (conn) => {
   return new Promise((resolve, reject) => {
+    log.info({}, 'Creating channel')
     conn.createChannel((err, channel) => {
       if (err) {
+        log.info({ err: err }, 'Error occurred whilst creating a channel')
         return reject(err)
       }
       return resolve(channel)
@@ -25,13 +34,18 @@ const createChannel = (conn) => {
   })
 }
 
-const assertQueue = (channel, q) => {
+const assertQueue = (channel, queueName) => {
   return new Promise((resolve, reject) => {
-    channel.assertQueue(q, {durable: false}, (err) => {
+    log.info({ queueName: queueName }, 'Asserting queue')
+    channel.assertQueue(queueName, {durable: false}, (err) => {
       if (err) {
+        log.info({
+          err: err,
+          queueName: queueName
+        }, 'Error occurred whilst creating a channel')
         return reject(err)
       }
-      return resolve(q)
+      return resolve(queueName)
     })
   })
 }
@@ -40,9 +54,7 @@ const create = async (messagebroker, queueName) => {
   const conn = await connect(messagebroker)
   const channel = await createChannel(conn)
   await assertQueue(channel, queueName)
-  // @todo
-  // Configure this
-  channel.prefetch(10)
+  channel.prefetch(config.get('channelPrefetch'))
   return new Queue(messagebroker, channel, queueName)
 }
 

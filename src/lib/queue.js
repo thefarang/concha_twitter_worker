@@ -1,5 +1,7 @@
 'use strict'
 
+const log = require('./log')
+
 class Queue {
   constructor (messagebroker, channel, queueName) {
     this.messagebroker = messagebroker
@@ -17,8 +19,12 @@ class Queue {
     }, { noAck: true })
   }
 
-  sendToQueue (outgoingQueue, msg) {
-    this.channel.sendToQueue(outgoingQueue.getQueueName(), Buffer.from(msg, 'UTF-8'), { persistent: false })
+  sendToQueue (outgoingQueue, payload) {
+    log.info({
+      outgoingQueueName: outgoingQueue.getQueueName(),
+      payload: payload
+    }, 'Sending payload to queue')
+    this.channel.sendToQueue(outgoingQueue.getQueueName(), Buffer.from(payload, 'UTF-8'), { persistent: false })
   }
 }
 
