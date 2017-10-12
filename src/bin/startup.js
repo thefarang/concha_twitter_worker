@@ -2,6 +2,9 @@
 
 const config = require('config')
 const app = require('../app')
+const log = require('../lib/log')
+
+log.info({}, 'Starting Concha Twitter Worker')
 
 // @todo
 // Set timeout to allow time for the message broker to standup.

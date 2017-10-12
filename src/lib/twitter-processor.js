@@ -1,5 +1,6 @@
 'use strict'
 
+const log = require('./log')
 const config = require('config')
 const Twitter = require('twitter-node-client').Twitter
 
@@ -13,6 +14,7 @@ const twitter = new Twitter({
 
 const pull = async (twitterScreenName) => {
   try {
+    log.info({ twitterScreenName: twitterScreenName }, 'Pulling Twitter data for user')
     const twitterUser = await getUser(twitterScreenName)
     const tweets = await getLatestTweets(twitterScreenName)
 
@@ -25,15 +27,19 @@ const pull = async (twitterScreenName) => {
       })
     }
 
-    return {
+    const twitterData = {
       twitterScreenName: twitterScreenName,
       noOfFollowers: twitterUser.followers_count,
       noOfTweets: twitterUser.statuses_count, // No of tweets
-      noOfLikesReceived: favoriteCount, // No of tweet likesz
+      noOfLikesReceived: favoriteCount, // No of tweet likes
       noOfRetweetsReceived: retweetCount
     }
+
+    log.info({ twitterData: twitterData }, 'Twitter data pulled and processed successfully')
+    return twitterData
   } catch (err) {
-    console.log(err)
+    // @todo - what to do here in the event of failure
+    log.info({ err: err }, 'An error occurred pulling data from Twitter')
   }
 }
 
@@ -43,6 +49,7 @@ const getUser = (screenName) => {
       screen_name: screenName
     },
     (err, res, body) => {
+      log.info({ err: err, screenName: screenName }, 'An error occurred getting the Twitter user')
       return reject(err)
     },
     (twitterUser) => {
@@ -60,6 +67,10 @@ const getLatestTweets = (screenName) => {
       exclude_replies: true
     },
     (err, res, body) => {
+      log.info({
+        err: err,
+        screenName: screenName
+      }, 'An error occurred getting the latest tweets for Twitter user')
       return reject(err)
     },
     (tweets) => {
