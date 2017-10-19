@@ -6,10 +6,7 @@ volumes:
 services:
 
   rabbitmq:
-    # @todo
-    # Container name should match the name given in the mongo connection string
-    # Refactor into environment variables, then reinclude the container name.
-    # container_name: rabbitmq_concha_twitter
+    container_name: rabbitmq
     image: rabbitmq:3.6.12-alpine
     ports:
       - 5672:5672
@@ -17,10 +14,7 @@ services:
       - messagebroker:/data/messages
 
   concha_twitter_worker:
-    # @todo
-    # Container name should match the name given in the mongo connection string
-    # Refactor into environment variables, then reinclude the container name.
-    # container_name: concha_twitter
+    container_name: concha_twitter_worker
     environment:
       - NODE_CONFIG_DIR=/app/src/config
       - TWITTER_CONSUMER_KEY
